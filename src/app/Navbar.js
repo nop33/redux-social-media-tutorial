@@ -1,6 +1,7 @@
 import React from 'react'
 
 export const Navbar = () => {
+  console.log('Navbar renders')
   return (
     <nav>
       <section>
