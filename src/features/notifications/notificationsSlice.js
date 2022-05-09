@@ -1,4 +1,9 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import {
+  createSlice,
+  createAsyncThunk,
+  createEntityAdapter,
+  createSelector,
+} from '@reduxjs/toolkit'
 
 import { client } from '../../api/client'
 
@@ -6,7 +11,7 @@ export const fetchNotifications = createAsyncThunk(
   'notifications/fetchNotifications',
   async (_, { getState }) => {
     const state = getState()
-    const allNotifications = state.notifications
+    const allNotifications = Object.values(state.notifications.entities)
     const [latestNotification] = allNotifications
     const latestTimestamp = latestNotification ? latestNotification.date : ''
 
@@ -19,22 +24,41 @@ export const fetchNotifications = createAsyncThunk(
   }
 )
 
+const notificationAdapter = createEntityAdapter({
+  sortComparer: (a, b) => b.date.localeCompare(a.date),
+})
+
 const notificationSlice = createSlice({
   name: 'notifications',
-  initialState: [],
+  initialState: notificationAdapter.getInitialState(),
   reducers: {
     markAllNotificationsRead(state, action) {
-      state.forEach((notification) => (notification.read = true))
+      // state.forEach((notification) => (notification.read = true))
+      Object.values(state.entities).forEach(
+        (notification) => (notification.read = true)
+      )
     },
   },
   extraReducers(builder) {
     builder.addCase(fetchNotifications.fulfilled, (state, action) => {
-      state.push(...action.payload)
-      state.forEach((notification) => (notification.isNew = !notification.read))
-      state.sort((a, b) => b.date.localeCompare(a.date))
+      // state.push(...action.payload)
+      notificationAdapter.upsertMany(state, action.payload)
+      // state.forEach((notification) => (notification.isNew = !notification.read))
+      Object.values(state.entities).forEach(
+        (notification) => (notification.isNew = !notification.read)
+      )
+      // state.sort((a, b) => b.date.localeCompare(a.date))
     })
   },
 })
+
+export const { selectAll: selectAllNotifications } =
+  notificationAdapter.getSelectors((state) => state.notifications)
+
+export const selectUnreadNotifications = createSelector(
+  [selectAllNotifications],
+  (notifications) => notifications.filter((notification) => notification.isNew)
+)
 
 export const { markAllNotificationsRead } = notificationSlice.actions
 

@@ -3,11 +3,16 @@ import { useSelector, useDispatch } from 'react-redux'
 import { formatDistanceToNow, parseISO } from 'date-fns'
 import classnames from 'classnames'
 
-import { markAllNotificationsRead } from './notificationsSlice'
+import {
+  markAllNotificationsRead,
+  selectAllNotifications,
+} from './notificationsSlice'
+
+import { useSelectUsers } from '../users/usersSlice'
 
 const NotificationsList = () => {
-  const notifications = useSelector((state) => state.notifications)
-  const users = useSelector((state) => state.users)
+  const notifications = useSelector(selectAllNotifications)
+  const users = useSelectUsers()
   const dispatch = useDispatch()
 
   useLayoutEffect(() => {
