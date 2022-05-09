@@ -1,4 +1,9 @@
-import { createSlice, nanoid, createAsyncThunk } from '@reduxjs/toolkit'
+import {
+  createSlice,
+  nanoid,
+  createAsyncThunk,
+  createSelector,
+} from '@reduxjs/toolkit'
 import { useSelector } from 'react-redux'
 import { client } from '../../api/client'
 
@@ -34,6 +39,11 @@ const usersSlice = createSlice({
 export const useSelectUsers = () => useSelector((state) => state.users)
 export const useSelectUser = (userId) =>
   useSelector((state) => state.users.find((user) => user.id === userId))
+
+export const selectPostsByUser = createSelector(
+  [(state) => state.posts, (state, userId) => userId],
+  (state, userId) => state.posts.filter((post) => post.user === userId)
+)
 
 export const { addUser } = usersSlice.actions
 

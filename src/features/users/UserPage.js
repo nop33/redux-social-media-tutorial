@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import { useSelectUser } from '../users/usersSlice'
+import { useSelectUser, selectPostsByUser } from '../users/usersSlice'
 
 const UserPage = ({
   match: {
@@ -11,9 +11,7 @@ const UserPage = ({
 }) => {
   const user = useSelectUser(userId)
 
-  const userPosts = useSelector((state) =>
-    state.posts.posts.filter((post) => post.user === userId)
-  )
+  const userPosts = useSelector((state) => selectPostsByUser(state, userId))
 
   console.log('UserPage renders')
 
