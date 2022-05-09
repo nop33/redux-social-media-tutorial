@@ -2,6 +2,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { useSelectPost } from './postsSlice'
+import PostAuthor from './PostAuthor'
+import ReactionButtons from './ReactionButtons'
 
 const SinglePostPage = ({
   match: {
@@ -13,10 +15,16 @@ const SinglePostPage = ({
   return post ? (
     <section>
       <article>
-        <Link to={`/posts/${post.id}/edit`}>Edit Post</Link>
         <h2>{post.title}</h2>
         <p>{post.content}</p>
+        <PostAuthor userId={post.user} />
       </article>
+      <div>
+        <ReactionButtons post={post} />
+      </div>
+      <div>
+        <Link to={`/posts/${post.id}/edit`}>Edit Post</Link>
+      </div>
       <div>
         <Link to="/">All posts</Link>
       </div>
